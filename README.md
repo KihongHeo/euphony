@@ -1,7 +1,7 @@
 # Euphony
 Euphony: a probabilistic model-guided program synthesizer
 
-## Build
+## Build (tested on Linux)
 ```
 $ ./build
 ```
