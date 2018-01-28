@@ -7,5 +7,5 @@ export Z3_LIBRARY_PATH="$WORKDIR/../thirdparty/z3/build/python"
 if [ -z "$PYPATH" ]; then
 	echo "python3 not found"
 else
-	PYTHONPATH=../thirdparty/libeusolver/build:../thirdparty/z3/build/python "$PYPATH" benchmarks.py -sphog trained/phog_bv "$1"
+	PYTHONPATH=../thirdparty/libeusolver/build:../thirdparty/z3/build/python "$PYPATH" benchmarks.py -phog trained/phog_bv "$1"
 fi
