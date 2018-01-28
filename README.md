@@ -1,5 +1,5 @@
 # Euphony
-Euphony: a statistical program model-guided program synthesizer
+Euphony: a probabilistic model-guided program synthesizer
 
 ## Build
 ```
