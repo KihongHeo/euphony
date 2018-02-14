@@ -114,6 +114,7 @@ class Solver(object):
 
             if _is_expr(sol_or_cex):
                 solution_found_at = time.clock() - time_origin
+                print(len(self.points))
                 #print('Solution Found at : %.2f sec\n' % solution_found_at)
                 if self.report_additional_info:
                     yield (sol_or_cex,
