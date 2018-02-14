@@ -46,10 +46,12 @@ def count_example(args, f):
     except:
         return -1
 
-def run_euphony(args, f, solver="euphony"):
+def run_solver(args, f, solver="euphony"):
     cmd = 'timeout ' + str(args.timeout) + ' ./bin/run_' + args.cmd
     if solver == "eusolver":
         cmd += "_eusolver"
+    elif args.strategy is not "":
+        cmd += "_" + args.strategy
 
     cmd += ' benchmarks/' + args.cmd + '/test/' + f
     start_time = time.time()
@@ -83,10 +85,17 @@ def print_header(args):
     else:
         E = "|E|"
     print("-" * 120)
-    print("  %54s %18s" % ("EUPHONY", "EUSOLVER"))
-    print("  %-30s %8s %8s %8s %8s %8s" %
-          (args.cmd.capitalize() + " Benchmarks", E, "|P|", "Time", "|P|", "Time"))
-    print("-" * 120)
+
+    if args.only_euphony:
+        print("  %54s " % ("EUPHONY"))
+        print("  %-30s %8s %8s %8s " %
+              (args.cmd.capitalize() + " Benchmarks", E, "|P|", "Time"))
+        print("-" * 120)
+    else:
+        print("  %54s %18s" % ("EUPHONY", "EUSOLVER"))
+        print("  %-30s %8s %8s %8s %8s %8s" %
+              (args.cmd.capitalize() + " Benchmarks", E, "|P|", "Time", "|P|", "Time"))
+        print("-" * 120)
 
 def run(args, logger):
     os.makedirs('euphony-out/' + args.cmd, 0o755, True)
@@ -96,24 +105,35 @@ def run(args, logger):
 
     print_header(args)
     for f in inputs:
-        elapsed_time_euphony = run_euphony(args, f)
-        elapsed_time_eusolver = run_euphony(args, f, "eusolver")
+        elapsed_time_euphony = run_solver(args, f)
+        if not args.only_euphony:
+            elapsed_time_eusolver = run_solver(args, f, "eusolver")
+            P_eusolver = count_ast(args, f, "eusolver")
         E = count_example(args, f)
         P_euphony = count_ast(args, f)
-        P_eusolver = count_ast(args, f, "eusolver")
-        print("  %-30s %8d %8d %8.1f %8d %8.1f" %
-              (f, E, P_euphony, elapsed_time_euphony,
-               P_eusolver, elapsed_time_eusolver))
+        if args.only_euphony:
+            print("  %-30s %8d %8d %8.1f" %
+                  (f, E, P_euphony, elapsed_time_euphony))
+        else:
+            print("  %-30s %8d %8d %8.1f %8d %8.1f" %
+                  (f, E, P_euphony, elapsed_time_euphony,
+                   P_eusolver, elapsed_time_eusolver))
 
 def parse_args():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="cmd")
     subparser = subparsers.add_parser("string", help="Run the String Benchmark Programs")
     subparser.add_argument("--timeout", type = int, default = 3600)
+    subparser.add_argument("--strategy", type = str, default = "")
+    subparser.add_argument("--only_euphony", action="store_true", default = False)
     subparser = subparsers.add_parser("bitvec", help="Run the Bitvec Benchmark Programs")
     subparser.add_argument("--timeout", type = int, default = 3600)
+    subparser.add_argument("--strategy", type = str, default = "")
+    subparser.add_argument("--only_euphony", action="store_true", default = False)
     subparser = subparsers.add_parser("circuit", help="Run the Circuit Benchmark Programs")
     subparser.add_argument("--timeout", type = int, default = 3600)
+    subparser.add_argument("--strategy", type = str, default = "")
+    subparser.add_argument("--only_euphony", action="store_true", default = False)
     return parser.parse_args()
 
 def main():
@@ -128,7 +148,7 @@ def main():
     logger.addHandler(streamHandler)
     logger.setLevel(logging.DEBUG)
 
-    if args.cmd in [ "string", "bitvec", "circuit" ]:
+    if args.cmd in [ "string", "bitvec", "circuit" ] and args.strategy in [ "", "uniform", "pcfg", "pcfg_uniform" ]:
         run(args, logger)
     else:
         print("Invalid Argument")
