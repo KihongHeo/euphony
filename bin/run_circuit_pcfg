@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PYPATH="$EUPHONY_HOME/thirdparty/Python-3.5.1/python"
+WORKDIR=`pwd`
+export Z3_LIBRARY_PATH="$WORKDIR/../thirdparty/z3/build/python"
+
+if [ -z "$PYPATH" ]; then
+	echo "python3 not found"
+else
+	PYTHONPATH=$EUPHONY_HOME/thirdparty/libeusolver/build:$EUPHONY_HOME/thirdparty/z3/build/python "$PYPATH" benchmarks.py -sphog $EUPHONY_HOME/bin/trained/pcfg_circuit "$1"
+fi
