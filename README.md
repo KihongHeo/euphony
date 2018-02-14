@@ -2,7 +2,7 @@
 Euphony: a probabilistic model-guided program synthesizer
 
 ## Build (tested on Linux)
-```
+```sh
 $ ./build
 $ . bin/setenv
 ```
@@ -18,7 +18,7 @@ $ ./artifact [string | bitvec | circuit] --timeout 3600 --only_euphony --strateg
 ```
 
 ## Run Euphony on a single SyGus file
-```
+```sh
 $ ./bin/run_[string | bitvec | circuit] [a SyGuS input file]
 # For example
 $ ./bin/run_[string | bitvec | circuit] ../benchmarks/[string | bitvec | circuit]/test/[a SyGuS input file]
