@@ -34,36 +34,76 @@ def is_valid(f):
         or (f in bitvec_test) \
         or (f in circuit_test)
 
+def count_example(args, f):
+    if args.cmd == "circuit":
+        example_count_base_cmd = 'head -1 euphony-out/' + args.cmd + '/'
+        example_count_cmd = example_count_base_cmd + f + '.iter'
+    else:
+        example_count_base_cmd = 'grep \"constraint\" benchmarks/' + args.cmd + '/test/'
+        example_count_cmd = example_count_base_cmd + f + ' | wc -l'
+    try:
+        return int(subprocess.getoutput(example_count_cmd))
+    except:
+        return -1
+
+def run_euphony(args, f, solver="euphony"):
+    cmd = 'timeout ' + str(args.timeout) + ' ./bin/run_' + args.cmd
+    if solver == "eusolver":
+        cmd += "_eusolver"
+
+    cmd += ' benchmarks/' + args.cmd + '/test/' + f
+    start_time = time.time()
+    output = subprocess.getoutput(cmd)
+    if output is "":
+        iters = ""
+        output = ""
+    else:
+        lines = output.split('\n')
+        iters = lines[0]
+        output = lines[1]
+    with open('euphony-out/' + args.cmd + '/' + f + '.' + solver + '.iter', 'w') as out_file:
+        out_file.write(iters)
+    with open('euphony-out/' + args.cmd + '/' + f + '.' + solver + '.sol', 'w') as out_file:
+        out_file.write(output)
+    elapsed_time = time.time() - start_time
+    return elapsed_time
+
+def count_ast(args, f, solver="euphony"):
+    ast_count_base_cmd = './bin/stat euphony-out/' + args.cmd + '/'
+    ast_count_cmd = ast_count_base_cmd + f + '.' + solver + '.sol'
+    out = subprocess.getoutput(ast_count_cmd)
+    try:
+        return int(subprocess.getoutput(ast_count_cmd))
+    except:
+        return -1
+
+def print_header(args):
+    if args.cmd == "circuit":
+        E = "#Iter"
+    else:
+        E = "|E|"
+    print("-" * 120)
+    print("  %54s %18s" % ("EUPHONY", "EUSOLVER"))
+    print("  %-30s %8s %8s %8s %8s %8s" %
+          (args.cmd.capitalize() + " Benchmarks", E, "|P|", "Time", "|P|", "Time"))
+    print("-" * 120)
+
 def run(args, logger):
     os.makedirs('euphony-out/' + args.cmd, 0o755, True)
     inputs = [ f for f in os.listdir('benchmarks/' + args.cmd + '/test') \
                if f.endswith('.sl') and is_valid(f) ]
     inputs = sorted(inputs)
-    print("-" * 120)
-    print("%-25s %8s %8s %8s" %
-          (args.cmd + " Benchmarks", "|E|", "|P|", "Time"))
-    print("-" * 120)
-    euphony_base_cmd = 'timeout ' + str(args.timeout) \
-            + ' ./bin/run_' + args.cmd + ' benchmarks/' + args.cmd + '/test/'
-    example_count_base_cmd = 'grep \"constraint\" benchmarks/' + args.cmd + '/test/'
-    ast_count_base_cmd = './bin/stat euphony-out/' + args.cmd + '/'
+
+    print_header(args)
     for f in inputs:
-        example_count_cmd = example_count_base_cmd + f + ' | wc -l'
-        E = int(subprocess.getoutput(example_count_cmd))
-        euphony_cmd = euphony_base_cmd + f
-        start_time = time.time()
-        output = subprocess.getoutput(euphony_cmd)
-        with open('euphony-out/' + args.cmd + '/' + f + '.sol', 'w') as out_file:
-            out_file.write(output)
-        elapsed_time = time.time() - start_time
-        ast_count_cmd = ast_count_base_cmd + f + '.sol'
-        out = subprocess.getoutput(ast_count_cmd)
-        try:
-            P = int(subprocess.getoutput(ast_count_cmd))
-        except:
-            P = -1
-        print("%-25s %8d %8s %8.1f" %
-              (f, E, P, elapsed_time))
+        elapsed_time_euphony = run_euphony(args, f)
+        elapsed_time_eusolver = run_euphony(args, f, "eusolver")
+        E = count_example(args, f)
+        P_euphony = count_ast(args, f)
+        P_eusolver = count_ast(args, f, "eusolver")
+        print("  %-30s %8d %8d %8.1f %8d %8.1f" %
+              (f, E, P_euphony, elapsed_time_euphony,
+               P_eusolver, elapsed_time_eusolver))
 
 def parse_args():
     parser = argparse.ArgumentParser()
