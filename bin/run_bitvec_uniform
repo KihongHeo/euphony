@@ -1,8 +1,7 @@
 #!/bin/bash
 
 PYPATH="$EUPHONY_HOME/thirdparty/Python-3.5.1/python"
-WORKDIR=`pwd`
-export Z3_LIBRARY_PATH="$WORKDIR/../thirdparty/z3/build/python"
+export Z3_LIBRARY_PATH="$EUPHONY_HOME/thirdparty/z3/build/python"
 
 if [ -z "$PYPATH" ]; then
 	echo "python3 not found"

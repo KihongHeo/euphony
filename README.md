@@ -14,7 +14,7 @@ $ ./artifact [string | bitvec | circuit] --timeout 3600
 # Table 4,5,6 without EUSOLVER
 $ ./artifact [string | bitvec | circuit] --timeout 3600 --only_euphony
 # Figure 8
-$ ./artifact [string | bitvec | circuit] --timeout 3600 --only_euphony --strategy [uniform | pcfg | pcfg_uniform]
+$ ./artifact [string | bitvec | circuit] --timeout 3600 --only_euphony --strategy [pcfg | uniform | pcfg_uniform]
 ```
 
 ## Run Euphony on a single SyGus file
