@@ -21,5 +21,5 @@ $ ./artifact [string | bitvec | circuit] --timeout 3600 --only_euphony --strateg
 ```sh
 $ ./bin/run_[string | bitvec | circuit] [a SyGuS input file]
 # For example
-$ ./bin/run_[string | bitvec | circuit] ../benchmarks/[string | bitvec | circuit]/test/[a SyGuS input file]
+$ ./bin/run_string benchmarks/string/test/exceljet1.sl
 ```
