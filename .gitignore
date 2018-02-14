@@ -1,2 +1,6 @@
 __pycache__
 .*.sw*
+euphony-out
+euphony.log
+thirdparty/Python-3.5.1/
+thirdparty/z3/build/
