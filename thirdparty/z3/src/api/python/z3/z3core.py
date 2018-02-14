@@ -1,7 +1,6 @@
 # Automatically generated file
 import sys, os
 import ctypes
-# import pkg_resources
 from .z3types import *
 from .z3consts import *
 
