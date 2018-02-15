@@ -53,13 +53,14 @@ def count_example(args, f):
         return -1
 
 def run_solver(args, f, solver="euphony"):
-    cmd = 'timeout ' + str(args.timeout) + ' ./bin/run_' + args.cmd
+    memory_in_kb = args.memory * 1024 * 1024
+    cmd = '(ulimit -v ' + str(memory_in_kb) + '; timeout ' + str(args.timeout) + ' ./bin/run_' + args.cmd
     if solver == "eusolver":
         cmd += "_eusolver"
     elif args.strategy is not "":
         cmd += "_" + args.strategy
 
-    cmd += ' benchmarks/' + args.cmd + '/test/' + f
+    cmd += ' benchmarks/' + args.cmd + '/test/' + f + ')'
     start_time = time.time()
     output = subprocess.getoutput(cmd)
     if output is "":
@@ -130,14 +131,17 @@ def parse_args():
     subparsers = parser.add_subparsers(dest="cmd")
     subparser = subparsers.add_parser("string", help="Run the String Benchmark Programs")
     subparser.add_argument("--timeout", type = int, default = 3600)
+    subparser.add_argument("--memory", type = int, default = 16)
     subparser.add_argument("--strategy", type = str, default = "")
     subparser.add_argument("--only_euphony", action="store_true", default = False)
     subparser = subparsers.add_parser("bitvec", help="Run the Bitvec Benchmark Programs")
     subparser.add_argument("--timeout", type = int, default = 3600)
+    subparser.add_argument("--memory", type = int, default = 16)
     subparser.add_argument("--strategy", type = str, default = "")
     subparser.add_argument("--only_euphony", action="store_true", default = False)
     subparser = subparsers.add_parser("circuit", help="Run the Circuit Benchmark Programs")
     subparser.add_argument("--timeout", type = int, default = 3600)
+    subparser.add_argument("--memory", type = int, default = 16)
     subparser.add_argument("--strategy", type = str, default = "")
     subparser.add_argument("--only_euphony", action="store_true", default = False)
     return parser.parse_args()

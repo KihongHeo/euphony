@@ -9,6 +9,8 @@ $ . bin/setenv
 
 ## Reproduce the experiments in the paper
 ```sh
+# Run the experiments
+$ ./artifact [string | bitvec | circuit] [--timeout <sec> (default: 3600)] [--memory <GB> (default: 16)]
 # Table 4,5,6
 $ ./artifact [string | bitvec | circuit] --timeout 3600
 # Table 4,5,6 without EUSOLVER
